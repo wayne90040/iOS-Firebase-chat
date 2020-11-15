@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Conversations View Controller-->
+        <!--Chat-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ConversationsViewController" customModule="ios_FirebaseChat" customModuleProvider="target" sceneMemberID="viewController">
@@ -18,23 +18,38 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="wbj-Zc-eE3"/>
+                    <navigationItem key="navigationItem" title="Chat" id="wbj-Zc-eE3"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1945" y="-344"/>
         </scene>
-        <!--Conversations View Controller-->
+        <!--Profile-->
         <scene sceneID="Mzw-8v-OvU">
             <objects>
-                <viewController id="r6E-Ko-BaO" customClass="ConversationsViewController" customModule="ios_FirebaseChat" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="r6E-Ko-BaO" customClass="ProfileViewController" customModule="ios_FirebaseChat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="RJy-HO-0Jc">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="7he-aS-qbr">
+                                <rect key="frame" x="0.0" y="140" width="414" height="673"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="0LK-iM-0De"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="0LK-iM-0De" firstAttribute="trailing" secondItem="7he-aS-qbr" secondAttribute="trailing" id="16Y-tf-TNd"/>
+                            <constraint firstItem="7he-aS-qbr" firstAttribute="top" secondItem="0LK-iM-0De" secondAttribute="top" id="Muh-Fd-rud"/>
+                            <constraint firstItem="0LK-iM-0De" firstAttribute="bottom" secondItem="7he-aS-qbr" secondAttribute="bottom" id="cSm-iP-rEf"/>
+                            <constraint firstItem="7he-aS-qbr" firstAttribute="leading" secondItem="0LK-iM-0De" secondAttribute="leading" id="us5-P4-vnV"/>
+                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="to6-Dg-ACY"/>
+                    <navigationItem key="navigationItem" title="Profile" id="to6-Dg-ACY"/>
+                    <connections>
+                        <outlet property="mainTableView" destination="7he-aS-qbr" id="IJ7-kh-QjV"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fvT-11-zbo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -46,8 +61,8 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6Af-MV-KUe" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="WqO-iV-fa6"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5G9-fU-FAT">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="5G9-fU-FAT">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -65,6 +80,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="ibF-hb-ycj" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="tNi-2z-45S">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
@@ -83,8 +99,8 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="htC-eB-vR3" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="PRe-km-NOa"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="d0c-5y-qep">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="d0c-5y-qep">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseAuth
+import FBSDKLoginKit
+import GoogleSignIn
 import JGProgressHUD
 
 // final class 防止被覆寫
@@ -71,12 +73,28 @@ final class LoginViewController: UIViewController {
         return button
     }()
     
+    private let fbLoginButton: FBLoginButton = {
+        let button = FBLoginButton()
+        /// permissions -  取得 Facebook 資訊 email,
+        button.permissions = ["email,public_profile"]
+        return button
+    }()
+    
+    /// 按下會觸發 GIDSignInDelegate - didSignInFor
+    private let googleLoginButton = GIDSignInButton()
+    
     private var loginObserver: NSObjectProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        // 註冊為觀察者
+        loginObserver = NotificationCenter.default.addObserver(forName: .didLogInNotification, object: nil, queue: .main, using: { [weak self] _ in
+            guard let strongSelf = self else{
+                return
+            }
+            strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+        })
         
         title = "Log In"
         view.backgroundColor = .white
@@ -87,16 +105,21 @@ final class LoginViewController: UIViewController {
         
         loginButton.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
         
-        // delegate
+        GIDSignIn.sharedInstance()?.presentingViewController = self
+        
+        // MARK: Delegate
         emailText.delegate = self
         passwordText.delegate = self
+        fbLoginButton.delegate = self
         
-        // Add SubViews
+        // MARK: Add SubViews
         view.addSubview(scrollView)
         scrollView.addSubview(logoImageView)
         scrollView.addSubview(emailText)
         scrollView.addSubview(passwordText)
         scrollView.addSubview(loginButton)
+        scrollView.addSubview(fbLoginButton)
+        scrollView.addSubview(googleLoginButton)
     }
     
     override func viewDidLayoutSubviews() {
@@ -121,6 +144,23 @@ final class LoginViewController: UIViewController {
                                    y: passwordText.bottom + 10,
                                    width: scrollView.width - 60,
                                    height: 52)
+        
+        fbLoginButton.frame = CGRect(x: 30,
+                                     y: loginButton.bottom + 10,
+                                     width: scrollView.width - 60,
+                                     height: 52)
+        
+        googleLoginButton.frame = CGRect(x: 30,
+                                     y: fbLoginButton.bottom + 10,
+                                     width: scrollView.width - 60,
+                                     height: 52)
+    }
+    
+    deinit{
+        print("Login deinit")
+        if let observer = loginObserver{
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
     
     // MARK: - Action
@@ -148,16 +188,17 @@ final class LoginViewController: UIViewController {
                 return
             }
             
-            guard let userResult = result, error == nil else {
+            DispatchQueue.main.async {
+                strongSelf.spinner.dismiss()
+            }
+            
+            guard result != nil, error == nil else {
                 print("Fail to login with email: \(email)")
                 return
             }
             
-            
-            
             strongSelf.navigationController?.dismiss(animated: true, completion: nil)
         }
-        
     }
     
     func alertUserLoginError(){
@@ -168,18 +209,6 @@ final class LoginViewController: UIViewController {
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 
@@ -190,5 +219,70 @@ extension LoginViewController: UITextFieldDelegate{
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+}
+
+
+// MARK: - LoginButtonDelegate
+
+extension LoginViewController: LoginButtonDelegate{
+    
+    // loginButtonDidLogOut 為登出後會呼叫之函式
+    func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
+    }
+    
+    func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        
+        guard let token = result?.token?.tokenString else {
+            print("Failed Log in with Facebook")
+            return
+        }
+        
+        // MARK: 取得帳號資訊
+        let request = GraphRequest(graphPath: "me",
+                                   parameters: ["fields": "email, first_name, last_name, picture.type(large)"],
+                                   tokenString: token,
+                                   version: nil,
+                                   httpMethod: .get)
+        
+        request.start(completionHandler: { (respone, result, error) in
+            guard let result = result as? [String: Any], error == nil else{
+                print("Failed to make facebook GraphRequest")
+                return
+            }
+            
+            guard let firstName = result["first_name"] as? String,
+                  let lastName = result["last_name"] as? String,
+                  let email = result["email"] as? String else{
+                print("Failed to get facebook result")
+                return
+            }
+            
+            // MARK: 比對 Firebase Database 有無重複資料
+            DatabaseManager.shared.userExists(with: email, completion: { exist in
+                /// 不存在 就寫入資料庫
+                if !exist{
+                    DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName, lastName: lastName, emailAdress: email))
+                }
+            })
+            
+            // MARK: Firebase Login
+            
+            // 用 AccessToken.current!.tokenString 產生 Firebase 登入需要的 credential
+            let credential = FacebookAuthProvider.credential(withAccessToken: token)
+            
+            FirebaseAuth.Auth.auth().signIn(with: credential){ [weak self] (resultAuth, error) in
+                guard let strongSelf = self else{
+                    return
+                }
+                
+                guard resultAuth != nil, error == nil else{
+                    print("Facebook credential login failed")
+                    return
+                }
+                print("Successful Log in with Facebook")
+                strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+            }
+        })
     }
 }

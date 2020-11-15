@@ -13,12 +13,45 @@ import JGProgressHUD
 final class ConversationsViewController: UIViewController {
     
     private let spinner = JGProgressHUD(style: .dark)
+    
+    private let mainTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.isHidden = true
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        
+        return tableView
+    }()
+    
+    private let noConversationsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No Conversations!"
+        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = .systemFont(ofSize: 21, weight: .medium)
+        label.isHidden = true
+        return label
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
-
-        // Do any additional setup after loading the view.
+        
+        // MARK: Delegate
+        mainTableView.delegate = self
+        mainTableView.dataSource = self
+        
+        // MARK: Add SubViews
+        view.addSubview(mainTableView)
+        view.addSubview(noConversationsLabel)
+        
+        mainTableView.isHidden = false
+//        noConversationsLabel.isHidden = false
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        mainTableView.frame = view.bounds
+        noConversationsLabel.frame = CGRect(x: 10, y: (view.height - 100) / 2, width: view.width - 20, height: 100)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -38,16 +71,29 @@ final class ConversationsViewController: UIViewController {
             present(nav, animated: true, completion: nil)
         }
     }
-    
+}
 
-    /*
-    // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
+extension ConversationsViewController: UITableViewDelegate, UITableViewDataSource{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
     }
-    */
-
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.textLabel?.text = "Test"
+        cell.accessoryType = .disclosureIndicator
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        let vc = ChatViewController()
+        vc.title = "Test"
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
