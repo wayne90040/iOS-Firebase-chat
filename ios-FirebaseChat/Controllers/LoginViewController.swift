@@ -157,7 +157,6 @@ final class LoginViewController: UIViewController {
     }
     
     deinit{
-        print("Login deinit")
         if let observer = loginObserver{
             NotificationCenter.default.removeObserver(observer)
         }
@@ -197,6 +196,8 @@ final class LoginViewController: UIViewController {
                 return
             }
             
+            UserDefaults.standard.set(email, forKey: "email")
+            
             strongSelf.navigationController?.dismiss(animated: true, completion: nil)
         }
     }
@@ -223,11 +224,11 @@ extension LoginViewController: UITextFieldDelegate{
 }
 
 
-// MARK: - LoginButtonDelegate
+// MARK: - Facebook Login LoginButtonDelegate
 
 extension LoginViewController: LoginButtonDelegate{
     
-    // loginButtonDidLogOut 為登出後會呼叫之函式
+    /// loginButtonDidLogOut 為登出後會呼叫之函式
     func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
     }
     
@@ -253,16 +254,57 @@ extension LoginViewController: LoginButtonDelegate{
             
             guard let firstName = result["first_name"] as? String,
                   let lastName = result["last_name"] as? String,
-                  let email = result["email"] as? String else{
+                  let email = result["email"] as? String,
+                  let pic = result["picture"] as? [String: Any],
+                  let data = pic["data"] as? [String: Any],
+                  let pictureURL = data["url"] as? String else{
                 print("Failed to get facebook result")
                 return
             }
+            
+            UserDefaults.standard.set(email, forKey: "email")
             
             // MARK: 比對 Firebase Database 有無重複資料
             DatabaseManager.shared.userExists(with: email, completion: { exist in
                 /// 不存在 就寫入資料庫
                 if !exist{
-                    DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName, lastName: lastName, emailAdress: email))
+                    let newUser = ChatAppUser(firstName: firstName, lastName: lastName, emailAdress: email)
+                        
+                    DatabaseManager.shared.insertUser(with: newUser, completion: { success in
+                        if success{
+                            
+                            // Get URL
+                            guard let url = URL(string: pictureURL) else{
+                                print("Failed with String to Url ")
+                                return
+                            }
+                            
+                            print("Downloading data from facebook image")
+                            
+                            // Get Data
+                            URLSession.shared.dataTask(with: url, completionHandler: { data, response, error in
+                                guard let data = data else{
+                                    print("Failed to Get Data From Facebook")
+                                    return
+                                }
+                                
+                                print("Got data from Facebook")
+                                
+                                // Upload Image to Firebase
+                                let fileName = newUser.profilePicFileName
+                                StorageManager.shared.uploadProfilePic(with: data, fileName: fileName, completion: { result in
+                                    switch result{
+                                    case .success(let downloadUrl):
+                                        UserDefaults.standard.set(downloadUrl, forKey: "profile_picture_url")
+                                        print(downloadUrl)
+                                        
+                                    case .failure(let error):
+                                        print("Storage maanger error: \(error)")
+                                    }
+                                })
+                            }).resume()
+                        }
+                    })
                 }
             })
             

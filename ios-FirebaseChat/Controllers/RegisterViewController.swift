@@ -209,12 +209,32 @@ class RegisterViewController: UIViewController {
                     return
                 }
                 
-                DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName, lastName: lastName, emailAdress: email))
+                let newUser = ChatAppUser(firstName: firstName, lastName: lastName, emailAdress: email)
+                DatabaseManager.shared.insertUser(with: newUser, completion: { success in
+                    
+                    if success{
+                        // MARK: Upload Profile Image
+                        guard let profileImage = strongSelf.profileImageView.image, let data = profileImage.pngData() else {
+                            return
+                        }
+                        
+                        let fileName = newUser.profilePicFileName
+                        
+                        StorageManager.shared.uploadProfilePic(with: data, fileName: fileName, completion: { result in
+                            switch result{
+                            case .success(let downloadUrl):
+                                UserDefaults.standard.set(downloadUrl, forKey: "profile_picture_url")
+                                print(downloadUrl)
+                                
+                            case . failure(let error):
+                                print("StorageManager Error : \(error)")
+                            }
+                        })
+                    }
+                })
                 
                 strongSelf.navigationController?.dismiss(animated: true, completion: nil)
             }
-            
-            
         })
     }
     
@@ -225,17 +245,6 @@ class RegisterViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 // MARK: - UITextFieldDelegate

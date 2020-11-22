@@ -45,11 +45,8 @@ import FBSDKCoreKit
 import GoogleSignIn
 import Firebase
 
-
-
 @UIApplicationMain
 class AppDelegate:UIResponder, UIApplicationDelegate {
-    
     
     /// App 啟動時,執行的第一個 function 可以在這裡去跟server拉資料更新使用者狀態或更新檔......等
     func application( _ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? ) -> Bool {
@@ -63,7 +60,6 @@ class AppDelegate:UIResponder, UIApplicationDelegate {
         GIDSignIn.sharedInstance()?.clientID = FirebaseApp.app()?.options.clientID
         
         return true
-        
     }
     
     
@@ -87,7 +83,7 @@ class AppDelegate:UIResponder, UIApplicationDelegate {
 
 extension AppDelegate: GIDSignInDelegate{
     
-    // Google 登入完成時觸發
+    /// Google 登入完成時觸發
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         
         guard let user = user, error == nil else {
@@ -97,18 +93,55 @@ extension AppDelegate: GIDSignInDelegate{
             return
         }
         
-        guard let auth = user.authentication else {
-            print("Failed to Get Authentication")
-            return
-        }
+        UserDefaults.standard.set(user.profile.email, forKey: "email")
         
         // MARK: 檢查 Database 有無重複
         DatabaseManager.shared.userExists(with: user.profile.email, completion: { exist in
             if !exist{
                 // add to database
-                DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: user.profile.givenName,
-                                                                    lastName: user.profile.familyName,
-                                                                    emailAdress: user.profile.email))
+                let newUser = ChatAppUser(firstName: user.profile.givenName, lastName: user.profile.familyName, emailAdress: user.profile.email)
+                
+                DatabaseManager.shared.insertUser(with: newUser, completion: { success in
+                    if success{
+                        
+                        // MARK: Upload Image
+                        
+                        if user.profile.hasImage{
+                            
+                            /// Get Url
+                            guard let url = user.profile.imageURL(withDimension: 200) else {
+                                return
+                            }
+                            
+                            /// Get Image Data
+                            URLSession.shared.dataTask(with: url, completionHandler: { data, respone, error in
+                                guard let data = data else {
+                                    print("Failed to Get Data From Google")
+                                    return
+                                }
+                                
+                                // Save Data to Firebase
+                                let fileName = newUser.profilePicFileName
+                                
+                                StorageManager.shared.uploadProfilePic(with: data, fileName: fileName, completion: { result in
+                                    switch result{
+                                    case .success(let downloadUrl):
+                                        UserDefaults.standard.set(downloadUrl, forKey: "profile_picture_url")
+                                        print(downloadUrl)
+                                    
+                                    case .failure(let error):
+                                        print("Storage maanger error: \(error)")
+                                    }
+                                })
+                            }).resume()
+                        }
+                    }
+                })
+            }
+            
+            guard let auth = user.authentication else {
+                print("Failed to Get Authentication")
+                return
             }
             
             let credentail = GoogleAuthProvider.credential(withIDToken: auth.idToken, accessToken: auth.accessToken)
@@ -118,7 +151,6 @@ extension AppDelegate: GIDSignInDelegate{
                     print("Failed Log in with Google")
                     return
                 }
-                 
                 
                 print("Success Log in with Google")
                 /// 成功登入 發送通知

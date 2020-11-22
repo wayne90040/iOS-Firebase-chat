@@ -8,8 +8,9 @@
 import UIKit
 import FirebaseAuth
 import FBSDKLoginKit
+import SDWebImage
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
     
     @IBOutlet var mainTableView: UITableView!
     
@@ -18,24 +19,55 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        mainTableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        // delegate
         mainTableView.delegate = self
         mainTableView.dataSource = self
+        
+        mainTableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        mainTableView.tableHeaderView = createTableHeaderView()
 
-        // Do any additional setup after loading the view.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func createTableHeaderView() -> UIView? {
+        guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+            print("Failed to Get Email by Userdefault")
+            return nil
+        }
+        
+        let safeEmail = DatabaseManager.toSafeEmail(with: email)
+        let fileName = safeEmail + "_profile_picture.png"
+        let path = "images/" + fileName
+        
+        print(path)
+        
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.width, height: 300))
+        
+        headerView.backgroundColor = .link
+        
+        let imageView = UIImageView(frame: CGRect(x: (headerView.width - 150) / 2, y: 75, width: 150, height: 150))
+        
+        imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .white
+        imageView.layer.borderColor = UIColor.white.cgColor
+        imageView.layer.borderWidth = 3
+        imageView.layer.masksToBounds = true
+        imageView.layer.cornerRadius = imageView.width / 2
+        
+        headerView.addSubview(imageView)
+        
+        // Download Image
+        StorageManager.shared.downloadURL(for: path, completion: { result in
+            switch result{
+            case .success(let url):
+                imageView.sd_setImage(with: url, completed: nil)
+            
+            case .failure(let error):
+                print("Failed to get download url: \(error)")
+            }
+        })
+        
+        return headerView
     }
-    */
-
 }
 
 

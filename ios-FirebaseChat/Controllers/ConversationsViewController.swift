@@ -35,6 +35,11 @@ final class ConversationsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Add RightBarButtom
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose,
+                                                            target: self,
+                                                            action: #selector(didTapComposeButton))
+        
         // MARK: Delegate
         mainTableView.delegate = self
         mainTableView.dataSource = self
@@ -70,6 +75,11 @@ final class ConversationsViewController: UIViewController {
             nav.modalPresentationStyle = .fullScreen
             present(nav, animated: true, completion: nil)
         }
+    }
+    
+    @objc private func didTapComposeButton(){
+        let nav = UINavigationController(rootViewController: NewConversationViewController())
+        present(nav, animated: true)
     }
 }
 

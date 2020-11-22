@@ -13,6 +13,8 @@
 		2DCBF517255ECDEA0059AEAA /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF516255ECDEA0059AEAA /* ProfileViewController.swift */; };
 		2DCBF51C2560F1AB0059AEAA /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */; };
 		2DCBF51F2560F7DA0059AEAA /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF51E2560F7DA0059AEAA /* Message.swift */; };
+		2DCBF52225680FE60059AEAA /* NewConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF52125680FE60059AEAA /* NewConversationViewController.swift */; };
+		2DCBF5252568A0AD0059AEAA /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF5242568A0AD0059AEAA /* StorageManager.swift */; };
 		2DDA3EBD254E833500A5A661 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3EBC254E833500A5A661 /* AppDelegate.swift */; };
 		2DDA3EBF254E833500A5A661 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3EBE254E833500A5A661 /* SceneDelegate.swift */; };
 		2DDA3EC1254E833500A5A661 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3EC0254E833500A5A661 /* ViewController.swift */; };
@@ -34,6 +36,8 @@
 		2DCBF516255ECDEA0059AEAA /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		2DCBF51E2560F7DA0059AEAA /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		2DCBF52125680FE60059AEAA /* NewConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewController.swift; sourceTree = "<group>"; };
+		2DCBF5242568A0AD0059AEAA /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		2DDA3EB9254E833500A5A661 /* ios-FirebaseChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-FirebaseChat.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DDA3EBC254E833500A5A661 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2DDA3EBE254E833500A5A661 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -103,6 +107,7 @@
 				2DDA3EBE254E833500A5A661 /* SceneDelegate.swift */,
 				2DDA3EBC254E833500A5A661 /* AppDelegate.swift */,
 				2DA1BDF02558CCB900620843 /* DatabaseManager.swift */,
+				2DCBF5242568A0AD0059AEAA /* StorageManager.swift */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -135,6 +140,7 @@
 				2DDA3F292556A01100A5A661 /* ConversationsViewController.swift */,
 				2DCBF516255ECDEA0059AEAA /* ProfileViewController.swift */,
 				2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */,
+				2DCBF52125680FE60059AEAA /* NewConversationViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -293,6 +299,8 @@
 				2DA1BDF12558CCB900620843 /* DatabaseManager.swift in Sources */,
 				2DA1BDF42558CEBB00620843 /* ChatAppUser.swift in Sources */,
 				2DCBF51C2560F1AB0059AEAA /* ChatViewController.swift in Sources */,
+				2DCBF5252568A0AD0059AEAA /* StorageManager.swift in Sources */,
+				2DCBF52225680FE60059AEAA /* NewConversationViewController.swift in Sources */,
 				2DCBF517255ECDEA0059AEAA /* ProfileViewController.swift in Sources */,
 				2DDA3F20254E89F700A5A661 /* LoginViewController.swift in Sources */,
 				2DDA3F27254E92CA00A5A661 /* Extensions.swift in Sources */,
