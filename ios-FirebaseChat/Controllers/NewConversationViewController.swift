@@ -10,11 +10,14 @@ import JGProgressHUD
 
 class NewConversationViewController: UIViewController {
     
+    public var completion: (([String: String]) -> (Void))?
+    
     private let spinner = JGProgressHUD(style: .dark)
     
     private var hasFetched = false
     
     private var users = [[String: String]]()
+    
     private var results = [[String: String]]()
     
     private let searchBar: UISearchBar = {
@@ -90,6 +93,18 @@ extension NewConversationViewController: UITableViewDelegate, UITableViewDataSou
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        // Start Converation - 點擊搜尋結果
+        let didSelectUser = results[indexPath.row]
+        
+        // Dismiss and Push
+        dismiss(animated: true, completion: { [weak self] in
+            self?.completion?(didSelectUser)
+        })
+    }
 }
 
 
@@ -99,10 +114,10 @@ extension NewConversationViewController: UISearchBarDelegate{
     
     /// 搜尋觸發事件,點選虛擬鍵盤上的search按鈕時觸發此方法
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("searchBarSearchButtonClicked")
         guard  let text = searchBar.text, !text.replacingOccurrences(of: " ", with: "").isEmpty else {
             return
         }
+        
         results.removeAll()
         spinner.show(in: view)
         searchUsers(query: text)
@@ -135,7 +150,7 @@ extension NewConversationViewController: UISearchBarDelegate{
         // 3. update the UI: eitehr show results or show no results label
         guard hasFetched else { return }
         
-        var results: [[String: String]] = self.users.filter({
+        let results: [[String: String]] = self.users.filter({
             guard let name = $0["name"]?.lowercased() else{
                 return false
             }
