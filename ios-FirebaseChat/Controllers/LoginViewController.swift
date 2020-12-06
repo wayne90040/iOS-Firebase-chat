@@ -196,6 +196,26 @@ final class LoginViewController: UIViewController {
                 return
             }
             
+            // Get firstName & lastName From Database
+            let safeEmail = DatabaseManager.toSafeEmail(with: email)
+            
+            // Fetch
+            DatabaseManager.shared.getDataFor(path: safeEmail, completion: { result in
+                switch result{
+                case .success(let date):
+                    guard let userData = date as? [String: Any],
+                          let firstName = userData["first_name"] as? String,
+                          let lastName = userData["last_name"] as? String else{
+                        return
+                    }
+                    
+                    UserDefaults.standard.setValue("\(firstName) \(lastName)", forKey: "name")
+                    
+                case .failure(let error):
+                    print("Failed to Get Data with error: \(error)")
+                }
+            })
+            
             UserDefaults.standard.set(email, forKey: "email")
             
             strongSelf.navigationController?.dismiss(animated: true, completion: nil)
@@ -263,6 +283,7 @@ extension LoginViewController: LoginButtonDelegate{
             }
             
             UserDefaults.standard.set(email, forKey: "email")
+            UserDefaults.standard.setValue("\(firstName) \(lastName)", forKey: "name")
             
             // MARK: 比對 Firebase Database 有無重複資料
             DatabaseManager.shared.userExists(with: email, completion: { exist in

@@ -24,6 +24,8 @@ final class ChatViewController: MessagesViewController {
     
     public let otherUserEmail: String
     
+    private var conversationID: String?
+    
     private var messages = [Message]()
     
     // private let selfSender = Sender(photoURL: "", senderId: "1", displayName: "Wayne")
@@ -31,11 +33,15 @@ final class ChatViewController: MessagesViewController {
         guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
             return nil
         }
-        return Sender(photoURL: "", senderId: email, displayName: "Me")
+        
+        /// 應該會根據 senderId 來決定左右
+        let safeEmail = DatabaseManager.toSafeEmail(with: email)
+        return Sender(photoURL: "", senderId: safeEmail, displayName: "Me")
     }
     
-    init(with email: String){
+    init(with email: String, id: String?){
         self.otherUserEmail = email
+        self.conversationID = id
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -51,6 +57,39 @@ final class ChatViewController: MessagesViewController {
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if let conversationID = conversationID{
+            listenForMessages(id: conversationID)
+        }
+    }
+    
+    
+    
+    // MARK: Action
+    
+    private func listenForMessages(id: String){
+        DatabaseManager.shared.getAllMessagesForConversation(with: id, completion: { [weak self] result in
+            switch result{
+            case .success(let messages):
+                guard !messages.isEmpty else {
+                    print("Message is Empty")
+                    return
+                }
+            
+                self?.messages = messages
+                
+                DispatchQueue.main.async {
+                    self?.messagesCollectionView.reloadDataAndKeepOffset()
+                }
+               
+            case .failure(let error):
+                print("failed to get message: \(error)")
+            }
+        })
     }
 }
 
@@ -76,6 +115,7 @@ extension ChatViewController: MessagesDataSource ,MessagesLayoutDelegate, Messag
 }
 
 
+
 // MARK:- InputBarAccessoryViewDelegate
 extension ChatViewController: InputBarAccessoryViewDelegate{
     
@@ -88,21 +128,37 @@ extension ChatViewController: InputBarAccessoryViewDelegate{
         
         print("Sending: \(text)")
         
+        let message = Message(sender: selfSender, messageId: messageID, sentDate: Date(), kind: .text(text))
+        
+        print("isNewConversation: \(isNewConversation.description)")
+        
         // Send Message
         if isNewConversation{
+            
             // Create New Conversation in Database
-            let message = Message(sender: selfSender, messageId: messageID, sentDate: Date(), kind: .text(text))
-        
-            DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: self.title ?? "User", firstMessage: message, completion: { success in
+            DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success in
                 if success{
-                    print("success")
+                    print("Create NewConversation Success")
+                    self?.isNewConversation = false
                 }else{
-                    print("failed")
+                    print("Create NewConversation Failed")
                 }
             })
             
         }else{
+            
+            guard let conversationID = conversationID, let name = self.title else {
+                return
+            }
+            
             // Append to Existing Conversation
+            DatabaseManager.shared.sendMessage(to: conversationID, name: name, newMessage: message, completion: { success in
+                if success{
+                    print("Send Message Success")
+                }else{
+                    print("Send Message Failed")
+                }
+            })
         }
     }
     

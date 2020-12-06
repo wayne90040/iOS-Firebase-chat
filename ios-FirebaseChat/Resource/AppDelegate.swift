@@ -93,13 +93,20 @@ extension AppDelegate: GIDSignInDelegate{
             return
         }
         
-        UserDefaults.standard.set(user.profile.email, forKey: "email")
+        guard let email = user.profile.email,
+              let firstName = user.profile.givenName,
+              let lastName = user.profile.familyName else {
+            return
+        }
+        
+        UserDefaults.standard.set(email, forKey: "email")
+        UserDefaults.standard.setValue("\(firstName) \(lastName)", forKey: "name")
         
         // MARK: 檢查 Database 有無重複
-        DatabaseManager.shared.userExists(with: user.profile.email, completion: { exist in
+        DatabaseManager.shared.userExists(with: email, completion: { exist in
             if !exist{
                 // add to database
-                let newUser = ChatAppUser(firstName: user.profile.givenName, lastName: user.profile.familyName, emailAdress: user.profile.email)
+                let newUser = ChatAppUser(firstName: firstName, lastName: lastName, emailAdress: email)
                 
                 DatabaseManager.shared.insertUser(with: newUser, completion: { success in
                     if success{
