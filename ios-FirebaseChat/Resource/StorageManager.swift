@@ -15,10 +15,11 @@ class StorageManager {
     
     private let storage = Storage.storage().reference()
     
-    // fileName -> /images/afraz9-gmail-com_profile_picture.png
-    
     /// Upload pic to Firebase Storage and Return completion with Url String to Download
     public func uploadProfilePic(with data: Data, fileName: String, completion: @escaping(Result<String, Error>) -> Void){
+        
+        // fileName -> /images/afraz9-gmail-com_profile_picture.png
+        
         storage.child("images/\(fileName)").putData(data, metadata: nil, completion: { metadate, error in
             guard error == nil else{
                 print("Failed to upload ProfilePic to firebase")
@@ -27,6 +28,33 @@ class StorageManager {
             }
             
             self.storage.child("images/\(fileName)").downloadURL(completion: { url, error in
+                guard let url = url else{
+                    print("Failed to Get Download URL")
+                    completion(.failure(StorageError.failToGetDownloadURL))
+                    return
+                }
+                
+                let urlString = url.absoluteString
+                print("download URL returned: \(urlString)")
+                completion(.success(urlString))
+            })
+        })
+    }
+    
+    /// Upload image that will be sent in a conversation message
+    public func uploadMessagePhote(with data: Data, fileName: String, completion: @escaping(Result<String, Error>) -> Void){
+        
+        // 1. UpLoad to Firebase
+        storage.child("message_images/\(fileName)").putData(data, metadata: nil, completion: { [weak self] metadata, error in
+            guard error == nil else{
+                print("Failed to Upload Message Photo")
+                completion(.failure(StorageError.failedToUpload))
+                return
+            }
+            
+            // 2. Get URL From Firebase
+            self?.storage.child("message_images/\(fileName)").downloadURL(completion: { url, error in
+                
                 guard let url = url else{
                     print("Failed to Get Download URL")
                     completion(.failure(StorageError.failToGetDownloadURL))

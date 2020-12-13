@@ -10,6 +10,7 @@
 		2DA1BDF12558CCB900620843 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA1BDF02558CCB900620843 /* DatabaseManager.swift */; };
 		2DA1BDF42558CEBB00620843 /* ChatAppUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DA1BDF32558CEBB00620843 /* ChatAppUser.swift */; };
 		2DA1BDF72558E19F00620843 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 2DA1BDF62558E19F00620843 /* .gitignore */; };
+		2DB769CC2585BD2900111B49 /* PhotoMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB769CB2585BD2900111B49 /* PhotoMessageViewController.swift */; };
 		2DCBF517255ECDEA0059AEAA /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF516255ECDEA0059AEAA /* ProfileViewController.swift */; };
 		2DCBF51C2560F1AB0059AEAA /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */; };
 		2DCBF51F2560F7DA0059AEAA /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF51E2560F7DA0059AEAA /* Message.swift */; };
@@ -35,6 +36,7 @@
 		2DA1BDF02558CCB900620843 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		2DA1BDF32558CEBB00620843 /* ChatAppUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatAppUser.swift; sourceTree = "<group>"; };
 		2DA1BDF62558E19F00620843 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		2DB769CB2585BD2900111B49 /* PhotoMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMessageViewController.swift; sourceTree = "<group>"; };
 		2DCBF516255ECDEA0059AEAA /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		2DCBF51E2560F7DA0059AEAA /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				2DCBF516255ECDEA0059AEAA /* ProfileViewController.swift */,
 				2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */,
 				2DCBF52125680FE60059AEAA /* NewConversationViewController.swift */,
+				2DB769CB2585BD2900111B49 /* PhotoMessageViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -302,6 +305,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DB769CC2585BD2900111B49 /* PhotoMessageViewController.swift in Sources */,
 				2DA1BDF12558CCB900620843 /* DatabaseManager.swift in Sources */,
 				2DA1BDF42558CEBB00620843 /* ChatAppUser.swift in Sources */,
 				2DCBF51C2560F1AB0059AEAA /* ChatViewController.swift in Sources */,
