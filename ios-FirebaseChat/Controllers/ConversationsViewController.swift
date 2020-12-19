@@ -16,6 +16,8 @@ final class ConversationsViewController: UIViewController {
     
     private var conversations = [Conversation]()
     
+    private var loginObserver: NSObjectProtocol?
+    
     private let mainTableView: UITableView = {
         let tableView = UITableView()
         tableView.isHidden = true
@@ -42,16 +44,24 @@ final class ConversationsViewController: UIViewController {
                                                             target: self,
                                                             action: #selector(didTapComposeButton))
         
+        startListeningForConversations()
+        
+        loginObserver = NotificationCenter.default.addObserver(forName: .didLogInNotification, object: nil, queue: .main, using: { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+            
+            strongSelf.startListeningForConversations()
+        })
+        
         // MARK: Delegate
         mainTableView.delegate = self
         mainTableView.dataSource = self
+        mainTableView.isHidden = false
         
         // MARK: Add SubViews
         view.addSubview(mainTableView)
         view.addSubview(noConversationsLabel)
-        
-        mainTableView.isHidden = false
-//        noConversationsLabel.isHidden = false
     }
     
     override func viewDidLayoutSubviews() {
@@ -59,7 +69,6 @@ final class ConversationsViewController: UIViewController {
         
         mainTableView.frame = view.bounds
         noConversationsLabel.frame = CGRect(x: 10, y: (view.height - 100) / 2, width: view.width - 20, height: 100)
-        startListeningForConversations()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -74,6 +83,11 @@ final class ConversationsViewController: UIViewController {
         guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
             return
         }
+        
+        if let observer = loginObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        
         let safeEmail = DatabaseManager.toSafeEmail(with: email)
         
         DatabaseManager.shared.getAllConversations(for: safeEmail, completion: { [weak self] result in
@@ -89,9 +103,7 @@ final class ConversationsViewController: UIViewController {
             
             case .failure(let error):
                 print("failed to get Conversation: \(error)")
-                
             }
-            
         })
     }
     
@@ -118,12 +130,11 @@ final class ConversationsViewController: UIViewController {
         present(nav, animated: true)
     }
     
-    private func createNewConversation(result: [String: String]){
-        guard let name = result["name"], let email = result["email"] else {
-            return
-        }
-        
+    private func createNewConversation(result: SearchResult){
+        let name = result.name
+        let email = result.email
         let vc = ChatViewController(with: email, id: nil)
+        
         vc.isNewConversation = true
         vc.title = name
         vc.navigationItem.largeTitleDisplayMode = .never
@@ -160,6 +171,35 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
         vc.title = conversation.name
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        if editingStyle == .delete{
+            let id = conversations[indexPath.row].id
+            
+            tableView.beginUpdates()
+            
+            // 有 bugs
+            // 1. 會有 out of range
+            // 2. 資料庫需要改規格 -> 紀錄刪不乾淨
+            
+            self.conversations.remove(at: indexPath.row)
+            
+            tableView.deleteRows(at: [indexPath], with: .left)
+            
+            DatabaseManager.shared.deleteConversation(conversationId: id, completion: { success in
+                if !success{
+                    // add alert
+                }
+            })
+    
+            tableView.endUpdates()
+        }
     }
 }
 

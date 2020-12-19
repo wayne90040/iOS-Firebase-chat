@@ -10,7 +10,7 @@ import JGProgressHUD
 
 class NewConversationViewController: UIViewController {
     
-    public var completion: (([String: String]) -> (Void))?
+    public var completion: ((SearchResult) -> (Void))?
     
     private let spinner = JGProgressHUD(style: .dark)
     
@@ -18,7 +18,7 @@ class NewConversationViewController: UIViewController {
     
     private var users = [[String: String]]()
     
-    private var results = [[String: String]]()
+    private var results = [SearchResult]()
     
     private let searchBar: UISearchBar = {
         let searchBar = UISearchBar()
@@ -30,7 +30,8 @@ class NewConversationViewController: UIViewController {
     private let tableView: UITableView = {
         let tableview = UITableView()
         tableview.isHidden = true
-        tableview.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableview.register(NewConversationTableViewCell.self,
+                           forCellReuseIdentifier: NewConversationTableViewCell.identifier)
         return tableview
     }()
     
@@ -88,8 +89,11 @@ extension NewConversationViewController: UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = results[indexPath.row]["name"]
+        let cell = tableView.dequeueReusableCell(withIdentifier: NewConversationTableViewCell.identifier,
+                                                for: indexPath) as! NewConversationTableViewCell
+        let result = results[indexPath.row]
+        
+        cell.configure(with: result)
         
         return cell
     }
@@ -105,6 +109,10 @@ extension NewConversationViewController: UITableViewDelegate, UITableViewDataSou
             self?.completion?(didSelectUser)
         })
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90
+    }
 }
 
 
@@ -112,7 +120,7 @@ extension NewConversationViewController: UITableViewDelegate, UITableViewDataSou
 
 extension NewConversationViewController: UISearchBarDelegate{
     
-    /// 搜尋觸發事件,點選虛擬鍵盤上的search按鈕時觸發此方法
+    /// 搜尋觸發事件, 點選虛擬鍵盤上的search按鈕時觸發此方法
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard  let text = searchBar.text, !text.replacingOccurrences(of: " ", with: "").isEmpty else {
             return
@@ -148,15 +156,30 @@ extension NewConversationViewController: UISearchBarDelegate{
     
     func filterUsers(with term: String){
         // 3. update the UI: eitehr show results or show no results label
-        guard hasFetched else { return }
+        guard let currentEmail = UserDefaults.standard.value(forKey: "email") as? String, hasFetched else {
+            return
+        }
         
-        let results: [[String: String]] = self.users.filter({
+        let safeEmail = DatabaseManager.toSafeEmail(with: currentEmail)
+
+        let results: [SearchResult] = self.users.filter({
+            // 新增功能: 透過 Email 搜尋時過濾自己
+            guard let email = $0["email"], email != safeEmail else{
+                return false
+            }
+            
             guard let name = $0["name"]?.lowercased() else{
                 return false
             }
             
             // 返回前輟相同 -> results
             return name.hasPrefix(term.lowercased())
+        }).compactMap({
+            guard let email = $0["email"], let name = $0["name"] else{
+                return nil
+            }
+            
+            return SearchResult(name: name, email: email)
         })
         
         self.results = results

@@ -407,6 +407,18 @@ extension DatabaseManager{
                     
                     kind = .photo(media)
                     
+                case "video":
+                    guard let placeholder = UIImage(named: "video_placeholder") else {
+                        return nil
+                    }
+                    
+                    let media = Media(url: URL(string: content),
+                                      image: nil,
+                                      placeholderImage: placeholder,
+                                      size: CGSize(width: 300, height: 300))
+                    
+                    kind = .video(media)
+                    
                 default:
                     kind = .text(content)
                 }
@@ -453,8 +465,10 @@ extension DatabaseManager{
                 if let urlString = mediaItem.url?.absoluteString{
                     message = urlString
                 }
-            case .video(_):
-                break
+            case .video(let mediaItem):
+                if let urlString = mediaItem.url?.absoluteString{
+                    message = urlString
+                }
             case .location(_):
                 break
             case .emoji(_):
@@ -629,6 +643,44 @@ extension DatabaseManager{
                 })
             })
         })
+    }
+    
+    public func deleteConversation(conversationId: String, completion: @escaping(Bool) -> Void){
+        // 只能刪自己的
+        guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+            return
+        }
+        
+        let safeEmail = DatabaseManager.toSafeEmail(with: email)
+        let ref = database.child("\(safeEmail)/conversations")
+        
+        // 1. Get all conversations for current user
+        ref.observeSingleEvent(of: .value, with: { snapshot in
+            // 2. Delete conversation in collection with target id
+            if var conversations = snapshot.value as? [[String: Any]]{
+                var indexToRemove = 0
+                
+                for conversation in conversations{
+                    // found id index
+                    if let id = conversation["id"] as? String, id == conversationId{
+                        break
+                    }
+                    indexToRemove += 1
+                }
+                conversations.remove(at: indexToRemove)
+                
+                // 3. Reset those conversations for the user in database
+                ref.setValue(conversations, withCompletionBlock: { error, _ in
+                    guard error == nil else {
+                        completion(false)
+                        return
+                    }
+                    
+                    completion(true)
+                })
+            }
+        })
+        
     }
 }
 

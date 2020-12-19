@@ -18,6 +18,8 @@
 		2DCBF5252568A0AD0059AEAA /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF5242568A0AD0059AEAA /* StorageManager.swift */; };
 		2DCBF528257341A20059AEAA /* ConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF527257341A20059AEAA /* ConversationTableViewCell.swift */; };
 		2DCBF52B2573522B0059AEAA /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DCBF52A2573522B0059AEAA /* Conversation.swift */; };
+		2DD8A136258DABEA001676D6 /* NewConversationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD8A135258DABEA001676D6 /* NewConversationTableViewCell.swift */; };
+		2DD8A139258DADE5001676D6 /* SearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DD8A138258DADE5001676D6 /* SearchResult.swift */; };
 		2DDA3EBD254E833500A5A661 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3EBC254E833500A5A661 /* AppDelegate.swift */; };
 		2DDA3EBF254E833500A5A661 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3EBE254E833500A5A661 /* SceneDelegate.swift */; };
 		2DDA3EC1254E833500A5A661 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3EC0254E833500A5A661 /* ViewController.swift */; };
@@ -44,6 +46,8 @@
 		2DCBF5242568A0AD0059AEAA /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		2DCBF527257341A20059AEAA /* ConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationTableViewCell.swift; sourceTree = "<group>"; };
 		2DCBF52A2573522B0059AEAA /* Conversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
+		2DD8A135258DABEA001676D6 /* NewConversationTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationTableViewCell.swift; sourceTree = "<group>"; };
+		2DD8A138258DADE5001676D6 /* SearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResult.swift; sourceTree = "<group>"; };
 		2DDA3EB9254E833500A5A661 /* ios-FirebaseChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ios-FirebaseChat.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DDA3EBC254E833500A5A661 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2DDA3EBE254E833500A5A661 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -125,6 +129,7 @@
 				2DDA3EC5254E833900A5A661 /* Assets.xcassets */,
 				2DDA3EC7254E833900A5A661 /* LaunchScreen.storyboard */,
 				2DCBF527257341A20059AEAA /* ConversationTableViewCell.swift */,
+				2DD8A135258DABEA001676D6 /* NewConversationTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -135,6 +140,7 @@
 				2DA1BDF32558CEBB00620843 /* ChatAppUser.swift */,
 				2DCBF51E2560F7DA0059AEAA /* Message.swift */,
 				2DCBF52A2573522B0059AEAA /* Conversation.swift */,
+				2DD8A138258DADE5001676D6 /* SearchResult.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -310,9 +316,11 @@
 				2DA1BDF42558CEBB00620843 /* ChatAppUser.swift in Sources */,
 				2DCBF51C2560F1AB0059AEAA /* ChatViewController.swift in Sources */,
 				2DCBF5252568A0AD0059AEAA /* StorageManager.swift in Sources */,
+				2DD8A136258DABEA001676D6 /* NewConversationTableViewCell.swift in Sources */,
 				2DCBF52225680FE60059AEAA /* NewConversationViewController.swift in Sources */,
 				2DCBF517255ECDEA0059AEAA /* ProfileViewController.swift in Sources */,
 				2DDA3F20254E89F700A5A661 /* LoginViewController.swift in Sources */,
+				2DD8A139258DADE5001676D6 /* SearchResult.swift in Sources */,
 				2DDA3F27254E92CA00A5A661 /* Extensions.swift in Sources */,
 				2DCBF52B2573522B0059AEAA /* Conversation.swift in Sources */,
 				2DDA3F2A2556A01100A5A661 /* ConversationsViewController.swift in Sources */,

@@ -39,6 +39,8 @@
 	<string>Give Camera Usage</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Photo Usage</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string></string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
