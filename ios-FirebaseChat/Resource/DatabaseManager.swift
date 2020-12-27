@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseDatabase
 import MessageKit
+import CoreLocation
 
 class DatabaseManager{
     static let shared = DatabaseManager()
@@ -78,8 +79,7 @@ class DatabaseManager{
     
     /// Check if user exist
     public func userExists(with email: String, completion: @escaping((Bool) -> Void)){
-        var safeEmail = email.replacingOccurrences(of: ".", with: "-")
-        safeEmail = safeEmail.replacingOccurrences(of: "@", with: "-")
+        let safeEmail = DatabaseManager.toSafeEmail(with: email)
         
         database.child(safeEmail).observeSingleEvent(of: .value, with: {snapshot in
             guard snapshot.value as? [String: Any] != nil else{
@@ -419,6 +419,16 @@ extension DatabaseManager{
                     
                     kind = .video(media)
                     
+                case "location":
+                    let locationComponents = content.components(separatedBy: ",")
+                    
+                    guard let longitude = Double(locationComponents[0]), let latitude = Double(locationComponents[1]) else {
+                        return nil
+                    }
+                    
+                    let location = Location(location: CLLocation(latitude: latitude, longitude: longitude), size: CGSize(width: 300, height: 300))
+                    kind = .location(location)
+                    
                 default:
                     kind = .text(content)
                 }
@@ -469,8 +479,11 @@ extension DatabaseManager{
                 if let urlString = mediaItem.url?.absoluteString{
                     message = urlString
                 }
-            case .location(_):
-                break
+            case .location(let locationItem):
+                let location = locationItem.location
+                
+                message = "\(location.coordinate.longitude),\(location.coordinate.latitude)"
+            
             case .emoji(_):
                 break
             case .audio(_):
@@ -680,7 +693,43 @@ extension DatabaseManager{
                 })
             }
         })
+    }
+    
+    /// 檢查是否已經存在 conversation
+    public func conversationExists(with targetRecipientEmail: String, completion: @escaping(Result<String, Error>) -> Void){
+        let safeRecipientEmail = DatabaseManager.toSafeEmail(with: targetRecipientEmail)
         
+        guard let userEmail = UserDefaults.standard.value(forKey: "email") as? String else {
+            return
+        }
+        let safeUserEmail = DatabaseManager.toSafeEmail(with: userEmail)
+        
+        database.child("\(safeRecipientEmail)/conversations").observeSingleEvent(of: .value, with: { snapshot in
+            guard let conversations = snapshot.value as? [[String: Any]] else {
+                completion(.failure(DatabaseManagerError.failedToFetch))
+                return
+            }
+            
+            // iterate and find conversation with target sender
+            if let conversation = conversations.first(where: {
+                guard let targetSendEmail = $0["other_user_email"] as? String else{
+                    return false
+                }
+                return safeUserEmail == targetSendEmail
+            }){
+                // get id
+                guard let id = conversation["id"] as? String else {
+                    completion(.failure(DatabaseManagerError.failedToFetch))
+                    return
+                }
+                
+                completion(.success(id))
+                return
+            }
+            
+            completion(.failure(DatabaseManagerError.failedToFetch))
+            return
+        })
     }
 }
 

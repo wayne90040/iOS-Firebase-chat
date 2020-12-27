@@ -118,12 +118,31 @@ final class ConversationsViewController: UIViewController {
     }
     
     /// ComposeButton Action
+    
     @objc private func didTapComposeButton(){
         let vc = NewConversationViewController()
         
         vc.completion = { [weak self] result in
-            print("didTapComposeButton: \(result)")
-            self?.createNewConversation(result: result)
+            guard let strongSelf = self else {
+                return
+            }
+            
+            let currentConversations = strongSelf.conversations
+            
+            if let targetConversation = currentConversations.first(where: {
+                // 現在有的 Conversation otherUserEmail == 搜尋結果的 email
+                $0.otherUserEmail == DatabaseManager.toSafeEmail(with: result.email)
+            }){
+                // Exist
+                let vc = ChatViewController(with: targetConversation.otherUserEmail, id: targetConversation.id)
+                vc.isNewConversation = false
+                vc.title = targetConversation.name
+                vc.navigationItem.largeTitleDisplayMode = .never
+                strongSelf.navigationController?.pushViewController(vc, animated: true)
+            }else{
+                // Not Exist
+                strongSelf.createNewConversation(result: result)
+            }
         }
         
         let nav = UINavigationController(rootViewController: vc)
@@ -132,13 +151,33 @@ final class ConversationsViewController: UIViewController {
     
     private func createNewConversation(result: SearchResult){
         let name = result.name
-        let email = result.email
-        let vc = ChatViewController(with: email, id: nil)
+        let safeEmail = DatabaseManager.toSafeEmail(with: result.email)
         
-        vc.isNewConversation = true
-        vc.title = name
-        vc.navigationItem.largeTitleDisplayMode = .never
-        navigationController?.pushViewController(vc, animated: true)
+        // check database if conversation with these two users exists
+        // if it does, reuse conversation id
+        // otherwise use existing code
+        
+        DatabaseManager.shared.conversationExists(with: safeEmail, completion: { [weak self] result in
+            guard let strongSelf = self else{
+                return
+            }
+            
+            switch result{
+            case .success(let conversationId):
+                let vc = ChatViewController(with: safeEmail, id: conversationId)
+                vc.isNewConversation = false
+                vc.title = name
+                vc.navigationItem.largeTitleDisplayMode = .never
+                strongSelf.navigationController?.pushViewController(vc, animated: true)
+                
+            case .failure(_):
+                let vc = ChatViewController(with: safeEmail, id: nil)
+                vc.isNewConversation = true
+                vc.title = name
+                vc.navigationItem.largeTitleDisplayMode = .never
+                strongSelf.navigationController?.pushViewController(vc, animated: true)
+            }
+        })
     }
 }
 
@@ -146,6 +185,7 @@ final class ConversationsViewController: UIViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension ConversationsViewController: UITableViewDelegate, UITableViewDataSource{
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return conversations.count
     }
@@ -172,6 +212,8 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
         vc.navigationItem.largeTitleDisplayMode = .never
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    
     
     func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return .delete

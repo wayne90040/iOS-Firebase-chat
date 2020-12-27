@@ -55,11 +55,11 @@
             </objects>
             <point key="canvasLocation" x="1945" y="342"/>
         </scene>
-        <!--Item-->
+        <!--Chats-->
         <scene sceneID="jed-5A-psb">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="6Af-MV-KUe" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="WqO-iV-fa6"/>
+                    <tabBarItem key="tabBarItem" title="Chats" image="message.circle" catalog="system" id="WqO-iV-fa6"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="5G9-fU-FAT">
                         <rect key="frame" x="0.0" y="44" width="414" height="96"/>
@@ -93,11 +93,11 @@
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="93.75"/>
         </scene>
-        <!--Item-->
+        <!--Profile-->
         <scene sceneID="6He-Xf-UQZ">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="htC-eB-vR3" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="PRe-km-NOa"/>
+                    <tabBarItem key="tabBarItem" title="Profile" image="person.circle" catalog="system" id="PRe-km-NOa"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="d0c-5y-qep">
                         <rect key="frame" x="0.0" y="44" width="414" height="96"/>
@@ -114,6 +114,8 @@
         </scene>
     </scenes>
     <resources>
+        <image name="message.circle" catalog="system" width="128" height="121"/>
+        <image name="person.circle" catalog="system" width="128" height="121"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

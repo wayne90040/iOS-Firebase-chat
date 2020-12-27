@@ -31,6 +31,9 @@
 		2DDA3F24254E8A1100A5A661 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3F23254E8A1100A5A661 /* RegisterViewController.swift */; };
 		2DDA3F27254E92CA00A5A661 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3F26254E92CA00A5A661 /* Extensions.swift */; };
 		2DDA3F2A2556A01100A5A661 /* ConversationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA3F292556A01100A5A661 /* ConversationsViewController.swift */; };
+		2DEC4CB72596D9C0001AE7E4 /* LocationPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEC4CB62596D9C0001AE7E4 /* LocationPickerViewController.swift */; };
+		2DEC4CBA25982DE3001AE7E4 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEC4CB925982DE3001AE7E4 /* ProfileViewModel.swift */; };
+		2DEC4CBD25983596001AE7E4 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEC4CBC25983596001AE7E4 /* ProfileTableViewCell.swift */; };
 		85593C987614A431B9980A67 /* Pods_ios_FirebaseChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDED1090FA6739E42ECC8342 /* Pods_ios_FirebaseChat.framework */; };
 /* End PBXBuildFile section */
 
@@ -61,6 +64,9 @@
 		2DDA3F23254E8A1100A5A661 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		2DDA3F26254E92CA00A5A661 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		2DDA3F292556A01100A5A661 /* ConversationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsViewController.swift; sourceTree = "<group>"; };
+		2DEC4CB62596D9C0001AE7E4 /* LocationPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPickerViewController.swift; sourceTree = "<group>"; };
+		2DEC4CB925982DE3001AE7E4 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		2DEC4CBC25983596001AE7E4 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		4BD843E2969B71DF88DD5634 /* Pods-ios-FirebaseChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-FirebaseChat.debug.xcconfig"; path = "Target Support Files/Pods-ios-FirebaseChat/Pods-ios-FirebaseChat.debug.xcconfig"; sourceTree = "<group>"; };
 		8A42EE40590E74CA475C776D /* Pods-ios-FirebaseChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ios-FirebaseChat.release.xcconfig"; path = "Target Support Files/Pods-ios-FirebaseChat/Pods-ios-FirebaseChat.release.xcconfig"; sourceTree = "<group>"; };
 		DDED1090FA6739E42ECC8342 /* Pods_ios_FirebaseChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ios_FirebaseChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -130,6 +136,7 @@
 				2DDA3EC7254E833900A5A661 /* LaunchScreen.storyboard */,
 				2DCBF527257341A20059AEAA /* ConversationTableViewCell.swift */,
 				2DD8A135258DABEA001676D6 /* NewConversationTableViewCell.swift */,
+				2DEC4CBC25983596001AE7E4 /* ProfileTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -141,6 +148,7 @@
 				2DCBF51E2560F7DA0059AEAA /* Message.swift */,
 				2DCBF52A2573522B0059AEAA /* Conversation.swift */,
 				2DD8A138258DADE5001676D6 /* SearchResult.swift */,
+				2DEC4CB925982DE3001AE7E4 /* ProfileViewModel.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -156,6 +164,7 @@
 				2DCBF51B2560F1AA0059AEAA /* ChatViewController.swift */,
 				2DCBF52125680FE60059AEAA /* NewConversationViewController.swift */,
 				2DB769CB2585BD2900111B49 /* PhotoMessageViewController.swift */,
+				2DEC4CB62596D9C0001AE7E4 /* LocationPickerViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -314,8 +323,11 @@
 				2DB769CC2585BD2900111B49 /* PhotoMessageViewController.swift in Sources */,
 				2DA1BDF12558CCB900620843 /* DatabaseManager.swift in Sources */,
 				2DA1BDF42558CEBB00620843 /* ChatAppUser.swift in Sources */,
+				2DEC4CBD25983596001AE7E4 /* ProfileTableViewCell.swift in Sources */,
+				2DEC4CB72596D9C0001AE7E4 /* LocationPickerViewController.swift in Sources */,
 				2DCBF51C2560F1AB0059AEAA /* ChatViewController.swift in Sources */,
 				2DCBF5252568A0AD0059AEAA /* StorageManager.swift in Sources */,
+				2DEC4CBA25982DE3001AE7E4 /* ProfileViewModel.swift in Sources */,
 				2DD8A136258DABEA001676D6 /* NewConversationTableViewCell.swift in Sources */,
 				2DCBF52225680FE60059AEAA /* NewConversationViewController.swift in Sources */,
 				2DCBF517255ECDEA0059AEAA /* ProfileViewController.swift in Sources */,

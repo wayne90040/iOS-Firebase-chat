@@ -14,18 +14,71 @@ final class ProfileViewController: UIViewController {
     
     @IBOutlet var mainTableView: UITableView!
     
-    let items = ["Log Out"]
+    var profileViewModels = [ProfileViewModel]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        profileViewModels = createProfileViewModels()
         
         // delegate
         mainTableView.delegate = self
         mainTableView.dataSource = self
         
-        mainTableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        mainTableView.register(ProfileTableViewCell.self, forCellReuseIdentifier: ProfileTableViewCell.identifier)
         mainTableView.tableHeaderView = createTableHeaderView()
-
+    }
+    
+    func createProfileViewModels() ->  [ProfileViewModel]{
+        var result = [ProfileViewModel]()
+        
+        result.append(ProfileViewModel(title: "Name: \(UserDefaults.standard.value(forKey: "name") as? String ?? "No Name")",
+                                     profileModelType: .info, handler: nil))
+        
+        result.append(ProfileViewModel(title: "Email: \(UserDefaults.standard.value(forKey: "email") as? String ?? "No Email")",
+                                     profileModelType: .info, handler: nil))
+        
+        result.append(ProfileViewModel(title: "Log out", profileModelType: .logout, handler: { [weak self] in
+            guard let strongSelf = self else{
+                return
+            }
+            
+            let sheet = UIAlertController(title: "", message: "", preferredStyle: .actionSheet)
+            
+            sheet.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] _ in
+                
+                guard let strongSelf = self else {
+                    return
+                }
+                
+                // remove userdefaults
+                UserDefaults.standard.setValue(nil, forKey: "email")
+                UserDefaults.standard.setValue(nil, forKey: "name")
+                
+                // Facebook Logout
+                FBSDKLoginKit.LoginManager().logOut()
+                
+                // Firebase Logout
+                do{
+                    try FirebaseAuth.Auth.auth().signOut()
+                    
+                    // 回到登入頁面
+                    let vc = LoginViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    nav.modalPresentationStyle = .fullScreen
+                    strongSelf.present(nav, animated: true, completion: nil)
+                    
+                }catch{
+                    print("Failed to log out")
+                }
+            }))
+            
+            sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            strongSelf.present(sheet, animated: true, completion: nil)
+        }))
+        
+        return result
     }
     
     func createTableHeaderView() -> UIView? {
@@ -75,47 +128,20 @@ final class ProfileViewController: UIViewController {
 
 extension ProfileViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return items.count
+        return profileViewModels.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = items[indexPath.row]
-        cell.textLabel?.textAlignment = .center
-        cell.textLabel?.textColor = .red
+        let cell = tableView.dequeueReusableCell(withIdentifier: ProfileTableViewCell.identifier, for: indexPath) as! ProfileTableViewCell
+        let profileViewModel = profileViewModels[indexPath.row]
+        
+        cell.configure(with: profileViewModel)
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-    
-        let actionSheet  = UIAlertController(title: "", message: "", preferredStyle: .actionSheet)
-        let logoutAction = UIAlertAction(title: "Log Out", style: .destructive){ [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
-            
-            
-            // Facebook LogOut
-            FBSDKLoginKit.LoginManager().logOut()
-            
-            // Firebase Log Out
-            do{
-                try FirebaseAuth.Auth.auth().signOut()
-                let vc = LoginViewController()
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .fullScreen
-                
-                strongSelf.present(nav, animated: true, completion: nil)
-            }catch{
-                print("Log Out Error")
-            }
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        
-        actionSheet.addAction(logoutAction)
-        actionSheet.addAction(cancelAction)
-        present(actionSheet, animated: true)
+        profileViewModels[indexPath.row].handler?()
     }
 }

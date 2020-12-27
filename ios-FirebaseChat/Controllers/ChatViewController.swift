@@ -11,6 +11,7 @@ import MessageKit
 import InputBarAccessoryView
 import SDWebImage
 import AVKit
+import CoreLocation
 
 final class ChatViewController: MessagesViewController {
     
@@ -54,13 +55,14 @@ final class ChatViewController: MessagesViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupInputButton()
+        
         // Delegate
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messageCellDelegate = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
-        setupInputButton()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -116,12 +118,12 @@ final class ChatViewController: MessagesViewController {
             self?.presentVideoActionSheet()
         }))
         
-        sheet.addAction(UIAlertAction(title: "Audio", style: .default, handler: { _ in
+        sheet.addAction(UIAlertAction(title: "Audio", style: .default, handler: { [weak self] _ in
             
         }))
         
-        sheet.addAction(UIAlertAction(title: "Location", style: .default, handler: { _ in
-            
+        sheet.addAction(UIAlertAction(title: "Location", style: .default, handler: { [weak self] _ in
+            self?.presentLocationPicker()
         }))
         
         sheet.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
@@ -180,6 +182,40 @@ final class ChatViewController: MessagesViewController {
         
         present(sheet, animated: true, completion: nil)
     }
+    
+    private func presentLocationPicker(){
+        let vc = LocationPickerViewController(coordinates: nil)
+        vc.navigationItem.largeTitleDisplayMode = .never
+        
+        // sendButtonTapped
+        vc.completion = { [weak self] selectedCoorindates in
+            
+            guard let strongSelf = self else {
+                return
+            }
+            
+            guard let messageId = strongSelf.createMessageID(), let conversationID = strongSelf.conversationID,
+                  let name = strongSelf.title, let selfSender = strongSelf.selfSender else {
+                return
+            }
+            
+            let longitude = selectedCoorindates.longitude
+            let latitude = selectedCoorindates.latitude
+        
+            let location = Location(location: CLLocation(latitude: latitude, longitude: longitude), size: .zero)
+            let message = Message(sender: selfSender, messageId: messageId, sentDate: Date(), kind: .location(location))
+            
+            DatabaseManager.shared.sendMessage(to: conversationID, otherUserEmail: strongSelf.otherUserEmail, name: name, newMessage: message, completion: { success in
+                if success{
+                    print("success")
+                }else{
+                    print("failed")
+                }
+            })
+        }
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 
@@ -226,6 +262,25 @@ extension ChatViewController: MessageCellDelegate{
     /// You can get a reference to the `MessageType` for the cell by using `UICollectionView`'s
     /// `indexPath(for: cell)` method. Then using the returned `IndexPath` with the `MessagesDataSource`
     /// method `messageForItem(at:indexPath:messagesCollectionView)`
+    
+    func didTapMessage(in cell: MessageCollectionViewCell) {
+        guard let indexPath = messagesCollectionView.indexPath(for: cell) else {
+            return
+        }
+        
+        let message = messages[indexPath.section]
+        
+        switch message.kind {
+        case .location(let locationItem):
+            let coordinates = locationItem.location.coordinate
+            let vc = LocationPickerViewController(coordinates: coordinates)
+            vc.title = "Location"
+            
+            navigationController?.pushViewController(vc, animated: true)
+        default:
+            break
+        }
+    }
     
     // Photo & Video Tap
     func didTapImage(in cell: MessageCollectionViewCell) {
