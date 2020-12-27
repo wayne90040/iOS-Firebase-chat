@@ -199,6 +199,7 @@
 				2DDA3EB7254E833500A5A661 /* Resources */,
 				07558642F4C50601C72F4D30 /* [CP] Embed Pods Frameworks */,
 				DF9296D6765F94F1903F5C61 /* [CP] Copy Pods Resources */,
+				2DEC4CBF25983ABD001AE7E4 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -273,6 +274,23 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ios-FirebaseChat/Pods-ios-FirebaseChat-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		2DEC4CBF25983ABD001AE7E4 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
 		};
 		CDBD1897B863192DEF285509 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

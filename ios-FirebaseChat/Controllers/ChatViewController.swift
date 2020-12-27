@@ -23,6 +23,9 @@ final class ChatViewController: MessagesViewController {
         return formatter
     }()
     
+    private var userPhotoURL: URL?
+    private var otherUserPhotoURL: URL?
+    
     public var isNewConversation = false
     
     public let otherUserEmail: String
@@ -253,6 +256,73 @@ extension ChatViewController: MessagesDataSource ,MessagesLayoutDelegate, Messag
             break
         }
     }
+    
+    // change message background
+    func backgroundColor(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> UIColor {
+        let sender = message.sender
+        
+        if sender.senderId == selfSender?.senderId{
+            return .link
+        }
+        
+        return .secondarySystemBackground
+    }
+    
+    // 頭像
+    func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
+        let sender = message.sender
+        
+        if sender.senderId == selfSender?.senderId{
+            // show user image
+            if let userPhotoURL = userPhotoURL{
+                // set Image
+                avatarView.sd_setImage(with: userPhotoURL, completed: nil)
+            }else{
+                // Path: images/safeemail_profile_picture.png
+                
+                guard let email = UserDefaults.standard.value(forKey: "email") as? String else {
+                    return
+                }
+                
+                let safeEmail = DatabaseManager.toSafeEmail(with: email)
+                let path = "images/\(safeEmail)_profile_picture.png"
+                
+                // fetch Url
+                StorageManager.shared.downloadURL(for: path, completion: { [weak self] result in
+                    switch result{
+                    case .success(let url):
+                        self?.userPhotoURL = url
+                        DispatchQueue.main.async {
+                            avatarView.sd_setImage(with: url, completed: nil)
+                        }
+                    case .failure(let error):
+                        print("\(error)")
+                    }
+                })
+            }
+        }else{
+            // show other user image
+            if let otherUserPhotoURL = otherUserPhotoURL{
+                avatarView.sd_setImage(with: otherUserPhotoURL, completed: nil)
+            }else{
+                let safeEmail = DatabaseManager.toSafeEmail(with: otherUserEmail)
+                let path = "images/\(safeEmail)_profile_picture.png"
+                
+                // fetch Url
+                StorageManager.shared.downloadURL(for: path, completion: { [weak self] result in
+                    switch result{
+                    case .success(let url):
+                        self?.userPhotoURL = url
+                        DispatchQueue.main.async {
+                            avatarView.sd_setImage(with: url, completed: nil)
+                        }
+                    case .failure(let error):
+                        print("\(error)")
+                    }
+                })
+            }
+        }
+    }
 }
 
 
@@ -437,10 +507,15 @@ extension ChatViewController: InputBarAccessoryViewDelegate{
             
             DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success in
                 if success{
-                    print("Create NewConversation Success")
+                    // Create NewConversation Success
+                    let newConversationId = "conversation_\(message.messageId)"
+                    
+                    self?.conversationID = newConversationId
+                    self?.listenForMessages(id: newConversationId)
                     self?.isNewConversation = false
                     self?.messageInputBar.inputTextView.text = nil
                 }else{
+                    
                     print("Create NewConversation Failed")
                 }
             })
@@ -454,9 +529,10 @@ extension ChatViewController: InputBarAccessoryViewDelegate{
             
             DatabaseManager.shared.sendMessage(to: conversationID, otherUserEmail: otherUserEmail, name: name, newMessage: message, completion: { [weak self] success in
                 if success{
-                    print("Send Message Success")
+                    // Send Message Success
                     self?.messageInputBar.inputTextView.text = nil
                 }else{
+                    
                     print("Send Message Failed")
                 }
             })

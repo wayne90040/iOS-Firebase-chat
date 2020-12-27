@@ -57,7 +57,6 @@ final class ConversationsViewController: UIViewController {
         // MARK: Delegate
         mainTableView.delegate = self
         mainTableView.dataSource = self
-        mainTableView.isHidden = false
         
         // MARK: Add SubViews
         view.addSubview(mainTableView)
@@ -95,14 +94,20 @@ final class ConversationsViewController: UIViewController {
             switch result{
             case .success(let conversations):
                 print("success get conversation")
-                self?.conversations = conversations
                 
+                self?.conversations = conversations
+                self?.mainTableView.isHidden = false
+                self?.noConversationsLabel.isHidden = true
+    
                 DispatchQueue.main.async {
                     self?.mainTableView.reloadData()
                 }
             
             case .failure(let error):
                 print("failed to get Conversation: \(error)")
+                
+                self?.mainTableView.isHidden = true
+                self?.noConversationsLabel.isHidden = false
             }
         })
     }
