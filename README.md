@@ -24,3 +24,8 @@
 - Real Time Conversations
 - Search for Users
 - Dark Mode Support
+
+## View
+<p>
+  <img src="https://github.com/wayne90040/Firebase-chat-ios/blob/master/IMG_0448.PNG" width='50%' height='50%'/>
+</p>
