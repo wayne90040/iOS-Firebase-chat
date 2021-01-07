@@ -17,37 +17,10 @@
    
 </details>
 
-
-## Add Firebase to your iOS project
-
-#### Sign Up: 
-
-```swift
-Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
-    guard result != nil, error == nil else{
-        print("---Creating User Error---")
-        return
-    }
-}
-```
-
-#### Sign In: 
-
-```swift
-Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
-    guard result != nil, error == nil else {
-        print("Fail to login with email: \(email)")
-        return
-    }
-}
-```
-#### Reference: 
-  https://firebase.google.com/docs/ios/setup?hl=en
-  
-
-
-
-
-      
-    
-    
+## Features
+- Facebook / Google  Log In
+- Email Registration / Log In
+- Photo / Video / Location / Text Messages
+- Real Time Conversations
+- Search for Users
+- Dark Mode Support
