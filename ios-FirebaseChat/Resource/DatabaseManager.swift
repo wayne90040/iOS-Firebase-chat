@@ -35,7 +35,11 @@ class DatabaseManager{
     
     /// Insert New uesr to Database
     public func insertUser(with user: ChatAppUser, completion: @escaping(Bool) -> Void){
-        database.child(user.safeEmail).setValue(["first_name": user.firstName, "last_name": user.lastName], withCompletionBlock: { error, _ in
+        database.child(user.safeEmail).setValue(["first_name": user.firstName, "last_name": user.lastName], withCompletionBlock: { [weak self] error, _ in
+            guard let strongSelf = self else{
+                return
+            }
+            
             guard error == nil else {
                 print("Failed to Insert New user to Database")
                 completion(false)
@@ -44,14 +48,14 @@ class DatabaseManager{
             
             // 寫入 user array - > 搜尋使用者
             /// observeSingleEvent 只触发一次事件回调。这对于读取只需要加载一次且不希望之后更改的数据非常有用。
-            self.database.child("users").observeSingleEvent(of: .value, with: { snapshot in
+            strongSelf.database.child("users").observeSingleEvent(of: .value, with: { snapshot in
                 if var usersCollection = snapshot.value as? [[String: String]]{
                     // append user to user Array
                     
                     let newUser = ["name": user.firstName + " " + user.lastName, "email": user.safeEmail]
                     usersCollection.append(newUser)
                     
-                    self.database.child("users").setValue(usersCollection, withCompletionBlock: {error, _ in
+                    strongSelf.database.child("users").setValue(usersCollection, withCompletionBlock: {error, _ in
                         guard error == nil else {
                             completion(false)
                             return
@@ -63,7 +67,7 @@ class DatabaseManager{
                 }else{
                     // create user Array
                     let newCollection: [[String: String]] = [["name": user.firstName + " " + user.lastName, "email": user.safeEmail]]
-                    self.database.child("users").setValue(newCollection, withCompletionBlock: { error, _ in
+                    strongSelf.database.child("users").setValue(newCollection, withCompletionBlock: { error, _ in
                         
                         guard error == nil else {
                             completion(false)
@@ -741,6 +745,3 @@ extension DatabaseManager{
         case failedToFetch
     }
 }
-
-
-

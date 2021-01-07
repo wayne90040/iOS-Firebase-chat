@@ -97,7 +97,7 @@ final class ProfileViewController: UIViewController {
         
         print(path)
         
-        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.width, height: 300))
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.width, height: 300))
         
         headerView.backgroundColor = .link
         

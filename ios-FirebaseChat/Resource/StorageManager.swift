@@ -20,14 +20,18 @@ class StorageManager {
         
         // fileName -> /images/afraz9-gmail-com_profile_picture.png
         
-        storage.child("images/\(fileName)").putData(data, metadata: nil, completion: { metadate, error in
+        storage.child("images/\(fileName)").putData(data, metadata: nil, completion: { [weak self] metadate, error in
+            guard let strongSelf = self else {
+                return
+            }
+            
             guard error == nil else{
                 print("Failed to upload ProfilePic to firebase")
                 completion(.failure(StorageError.failedToUpload))
                 return
             }
             
-            self.storage.child("images/\(fileName)").downloadURL(completion: { url, error in
+            strongSelf.storage.child("images/\(fileName)").downloadURL(completion: { url, error in
                 guard let url = url else{
                     print("Failed to Get Download URL")
                     completion(.failure(StorageError.failToGetDownloadURL))

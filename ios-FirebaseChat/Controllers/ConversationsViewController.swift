@@ -235,7 +235,7 @@ extension ConversationsViewController: UITableViewDelegate, UITableViewDataSourc
             // 1. 會有 out of range
             // 2. 資料庫需要改規格 -> 紀錄刪不乾淨
             
-            self.conversations.remove(at: indexPath.row)
+            conversations.remove(at: indexPath.row)
             
             tableView.deleteRows(at: [indexPath], with: .left)
             

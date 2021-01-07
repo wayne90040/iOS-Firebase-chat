@@ -217,7 +217,7 @@ final class ChatViewController: MessagesViewController {
             })
         }
         
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 
@@ -368,7 +368,7 @@ extension ChatViewController: MessageCellDelegate{
             }
             
             let vc = PhotoMessageViewController(with: url)
-            self.navigationController?.pushViewController(vc, animated: true)
+            navigationController?.pushViewController(vc, animated: true)
         
         case .video(let media):
             guard let videoUrl = media.url else {
@@ -400,7 +400,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
         
         guard let messageId = createMessageID(),
               let conversationID = conversationID,
-              let name = self.title,
+              let name = title,
               let selfSender = selfSender else {
             return
         }
@@ -505,7 +505,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate{
             
             // Create New Conversation in Database
             
-            DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: self.title ?? "User", firstMessage: message, completion: { [weak self] success in
+            DatabaseManager.shared.createNewConversation(with: otherUserEmail, name: title ?? "User", firstMessage: message, completion: { [weak self] success in
                 if success{
                     // Create NewConversation Success
                     let newConversationId = "conversation_\(message.messageId)"
@@ -523,7 +523,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate{
         }else{
             // Append to Existing Conversation
             
-            guard let conversationID = conversationID, let name = self.title else {
+            guard let conversationID = conversationID, let name = title else {
                 return
             }
             

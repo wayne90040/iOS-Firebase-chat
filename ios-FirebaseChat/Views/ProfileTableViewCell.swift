@@ -11,7 +11,7 @@ class ProfileTableViewCell: UITableViewCell {
     static let identifier = "ProfileTableViewCell"
     
     public func configure(with model: ProfileViewModel){
-        self.textLabel?.text = model.title
+        textLabel?.text = model.title
         
         switch model.profileModelType {
         case .info:

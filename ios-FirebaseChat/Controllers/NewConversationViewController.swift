@@ -162,7 +162,7 @@ extension NewConversationViewController: UISearchBarDelegate{
         
         let safeEmail = DatabaseManager.toSafeEmail(with: currentEmail)
 
-        let results: [SearchResult] = self.users.filter({
+        let results: [SearchResult] = users.filter({
             // 新增功能: 透過 Email 搜尋時過濾自己
             guard let email = $0["email"], email != safeEmail else{
                 return false
@@ -183,7 +183,7 @@ extension NewConversationViewController: UISearchBarDelegate{
         })
         
         self.results = results
-        self.spinner.dismiss()
+        spinner.dismiss()
         
         // Update UI
         updateUI()
